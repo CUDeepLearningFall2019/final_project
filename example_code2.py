@@ -375,10 +375,21 @@ save_dir = "./gener_output"
 start = 0
 for step in range(iter):
     rand_lat = np.random.normal(size=(BATCH_SIZE, 720))
-    generated_images = gener.predict([image[], audio])
+    generated_image = gener.predict([image[], audio])
     stop = start+BATCH_SIZE
     real_image = [training_vid[start:stop], training_aud[start:stop]]
-    combined_image =
+    combined_image = np.concatenate([generated_image, real_image])
+    labels = np.concatenate([np.ones((BATCH_SIZE, 1)), np.zeros((BATCH_SIZE, 1))])
+    labels += 0.05 * np.random.random(labels.shape)
+    d_loss = discriminator.train_on_batch(combined_image, labels)
+    rand_lat = np.random.noraml(size = (BATCH_SIZE, 720))
+    misleading_targets = np.zeros((BATCH_SIZE, 1))
+    a_loss = gan.train_on_batch(rand_lat, misleading_targets)
+    start += BATCH_SIZE
+    if start >len(training_vid) - batch_size:
+        start = 0
+    if step % 100 == 0:
+        gan.save_weights('gan.h5')  
 
 
 
