@@ -69,8 +69,8 @@ BATCH_SIZE = 64
 # Note, that file is large enough to cause problems for sume verisons of Pickle,
 # so Numpy binary files are used.
 #training_vid_path = os.path.join(DATA_PATH,f'training_vid_{WIDTH}_{HEIGHT}.npy')
-training_vid_path = "../data/Video/video1.npy"
-training_audio_path = "../data/Audio/audio1.npy"
+training_vid_path = "/home/dl-group/data/Video/video1.npy"
+training_audio_path = "/home/dl-group/data/Audio/audio1.npy"
 
 print(f"Looking for file: {training_vid_path}")
 
@@ -91,9 +91,6 @@ else:
   training_vid = np.load(training_vid_path)
   training_aud = np.load(training_audio_path)
 
-training_vid.shape
-training_aud.shape
-training_vid[0,:,:,:]
 
 def noise_enc():
     ne = None
@@ -368,6 +365,15 @@ discriminator.summary()
 #
 # Training block
 #
+training_vid.shape
+training_aud.shape
+#first_vid = training_vid[0,:,:,:]
+#np.repeat(first_vid, training_vid.shape[0]).shape
+first_vid = np.zeros(training_vid.shape, dtype='float16')
+for i in range(first_vid.shape[0]):
+    first_vid[i,:,:,:] = training_vid[0,:,:,:]
+
+first_vid[0]
 
 iter = 10
 BATCH_SIZE = 2
@@ -375,7 +381,7 @@ save_dir = "./gener_output"
 start = 0
 for step in range(iter):
     rand_lat = np.random.normal(size=(BATCH_SIZE, 720))
-    generated_image = gener.predict([image[], audio])
+    generated_image = gener.predict([first_vid, training_aud])
     stop = start+BATCH_SIZE
     real_image = [training_vid[start:stop], training_aud[start:stop]]
     combined_image = np.concatenate([generated_image, real_image])
@@ -389,7 +395,7 @@ for step in range(iter):
     if start >len(training_vid) - batch_size:
         start = 0
     if step % 100 == 0:
-        gan.save_weights('gan.h5')  
+        gan.save_weights('gan.h5')
 
 
 
