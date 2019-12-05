@@ -91,6 +91,15 @@ else:
   training_vid = np.load(training_vid_path)
   training_aud = np.load(training_audio_path)
 
+#more data
+#first_vid = training_vid[0,:,:,:]
+#np.repeat(first_vid, training_vid.shape[0]).shape
+first_vid = np.zeros(training_vid.shape, dtype='float16')
+for i in range(first_vid.shape[0]):
+    first_vid[i,:,:,:] = training_vid[0,:,:,:]
+
+first_vid[0]
+
 
 def noise_enc():
     ne = None
@@ -112,7 +121,7 @@ def context_enc():
 
     for _i, _cnt in enumerate((2, 2)):
         x = Conv2D(filters = 100, kernel_size=(2, 2), padding='same',)(x)
-        x = BatchNormalization(axis=1)(x)
+        x = BatchNormalization(axis=-1)(x)
         #x = Activation('relu')(x)
         x = LeakyReLU()(x)
         #x = MaxPooling2D(pool_size=(2,2), dim_ordering="th" )(x)
@@ -367,13 +376,6 @@ discriminator.summary()
 #
 training_vid.shape
 training_aud.shape
-#first_vid = training_vid[0,:,:,:]
-#np.repeat(first_vid, training_vid.shape[0]).shape
-first_vid = np.zeros(training_vid.shape, dtype='float16')
-for i in range(first_vid.shape[0]):
-    first_vid[i,:,:,:] = training_vid[0,:,:,:]
-
-first_vid[0]
 
 iter = 10
 BATCH_SIZE = 2
